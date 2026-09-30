@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Вал-шестерня.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.201",
+  "name": "Вал-шестерня",
+  "properties": {
+    "material": "Сталь 40Х",
+    "mass": 2.94
+  },
+  "components": []
+}

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Шпонка 16x10x56 ГОСТ 23360-78.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Шпонка 16x10x56 ГОСТ 23360-78",
+  "properties": {
+    "material": null,
+    "mass": 0.07
+  },
+  "components": []
+}

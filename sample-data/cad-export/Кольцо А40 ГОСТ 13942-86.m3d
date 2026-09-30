@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Кольцо А40 ГОСТ 13942-86.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Кольцо А40 ГОСТ 13942-86",
+  "properties": {
+    "material": null,
+    "mass": 0.01
+  },
+  "components": []
+}

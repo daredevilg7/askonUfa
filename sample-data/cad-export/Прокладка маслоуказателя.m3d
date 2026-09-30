@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Прокладка маслоуказателя.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.902",
+  "name": "Прокладка маслоуказателя",
+  "properties": {
+    "material": "Паронит ПОН-Б",
+    "mass": null
+  },
+  "components": []
+}

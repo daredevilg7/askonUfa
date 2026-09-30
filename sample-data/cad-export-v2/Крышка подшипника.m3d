@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Крышка подшипника.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.501",
+  "name": "Крышка подшипника",
+  "properties": {
+    "material": "СЧ15",
+    "mass": 1.15
+  },
+  "components": []
+}

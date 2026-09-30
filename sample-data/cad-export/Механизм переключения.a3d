@@ -1,0 +1,21 @@
+{
+  "formatVersion": 1,
+  "fileName": "Механизм переключения.a3d",
+  "type": "Assembly",
+  "designation": "РДЦЛ.305000.000",
+  "name": "Механизм переключения",
+  "properties": {
+    "material": null,
+    "mass": null
+  },
+  "components": [
+    {
+      "file": "Рычаг переключения.a3d",
+      "count": 1
+    },
+    {
+      "file": "Болт М8x25 ГОСТ 7798-70.m3d",
+      "count": 2
+    }
+  ]
+}

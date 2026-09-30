@@ -1,0 +1,17 @@
+{
+  "formatVersion": 1,
+  "fileName": "Рычаг переключения.a3d",
+  "type": "Assembly",
+  "designation": "РДЦЛ.305001.000",
+  "name": "Рычаг переключения",
+  "properties": {
+    "material": null,
+    "mass": null
+  },
+  "components": [
+    {
+      "file": "Тяга переключения.a3d",
+      "count": 1
+    }
+  ]
+}

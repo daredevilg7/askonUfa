@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Кольцо распорное.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.30411.602",
+  "name": "Кольцо распорное",
+  "properties": {
+    "material": "Сталь 45",
+    "mass": 0.18
+  },
+  "components": []
+}

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Гайка М12 ГОСТ 5915-70.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Гайка М12 ГОСТ 5915-70",
+  "properties": {
+    "material": null,
+    "mass": 0.0161
+  },
+  "components": []
+}

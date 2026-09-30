@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Вал промежуточный.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.301",
+  "name": "Вал промежуточный",
+  "properties": {
+    "material": "Сталь 45",
+    "mass": 3.42
+  },
+  "components": []
+}

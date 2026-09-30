@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Крышка корпуса.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.102",
+  "name": "Крышка корпуса",
+  "properties": {
+    "material": "СЧ20",
+    "mass": 21.4
+  },
+  "components": []
+}

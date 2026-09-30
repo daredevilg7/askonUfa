@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Болт М8x25 ГОСТ 7798-70.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Болт М8x25 ГОСТ 7798-70",
+  "properties": {
+    "material": null,
+    "mass": 0.0135
+  },
+  "components": []
+}

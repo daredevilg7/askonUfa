@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Колесо зубчатое.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.302",
+  "name": "Колесо зубчатое",
+  "properties": {
+    "material": "Сталь 40Х",
+    "mass": 5.86
+  },
+  "components": []
+}

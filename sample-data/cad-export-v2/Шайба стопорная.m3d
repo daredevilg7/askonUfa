@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Шайба стопорная.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.710",
+  "name": "Шайба стопорная",
+  "properties": {
+    "material": "Сталь 65Г",
+    "mass": 0.02
+  },
+  "components": []
+}

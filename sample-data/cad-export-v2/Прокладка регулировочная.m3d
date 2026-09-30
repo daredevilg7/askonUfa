@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Прокладка регулировочная.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.502",
+  "name": "Прокладка регулировочная",
+  "properties": {
+    "material": "Сталь 08кп",
+    "mass": 0.004
+  },
+  "components": []
+}

@@ -1,0 +1,41 @@
+{
+  "formatVersion": 1,
+  "fileName": "Корпус редуктора.a3d",
+  "type": "Assembly",
+  "designation": "РДЦЛ.304112.100",
+  "name": "Корпус редуктора",
+  "properties": {
+    "material": null,
+    "mass": null
+  },
+  "components": [
+    {
+      "file": "Корпус.m3d",
+      "count": 1
+    },
+    {
+      "file": "Крышка корпуса.m3d",
+      "count": 1
+    },
+    {
+      "file": "Штифт 8x30 ГОСТ 3129-70.m3d",
+      "count": 2
+    },
+    {
+      "file": "Болт М12x40 ГОСТ 7798-70.m3d",
+      "count": 8
+    },
+    {
+      "file": "Гайка М12 ГОСТ 5915-70.m3d",
+      "count": 8
+    },
+    {
+      "file": "Шайба 12 ГОСТ 11371-78.m3d",
+      "count": 16
+    },
+    {
+      "file": "Болт М8x25 ГОСТ 7798-70.m3d",
+      "count": 6
+    }
+  ]
+}

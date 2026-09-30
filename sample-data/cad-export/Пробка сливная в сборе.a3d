@@ -1,0 +1,21 @@
+{
+  "formatVersion": 1,
+  "fileName": "Пробка сливная в сборе.a3d",
+  "type": "Assembly",
+  "designation": "РДЦЛ.304112.800",
+  "name": "Пробка сливная в сборе",
+  "properties": {
+    "material": null,
+    "mass": null
+  },
+  "components": [
+    {
+      "file": "Пробка сливная.m3d",
+      "count": 0
+    },
+    {
+      "file": "Шайба 12 ГОСТ 11371-78.m3d",
+      "count": 1
+    }
+  ]
+}

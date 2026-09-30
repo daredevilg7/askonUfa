@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Манжета 1.1-30x52 ГОСТ 8752-79.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Манжета 1.1-30x52 ГОСТ 8752-79",
+  "properties": {
+    "material": null,
+    "mass": 0.021
+  },
+  "components": []
+}

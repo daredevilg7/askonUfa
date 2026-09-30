@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Вал тихоходный.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.401",
+  "name": "Вал тихоходный",
+  "properties": {
+    "material": "Сталь 45",
+    "mass": 6.75
+  },
+  "components": []
+}

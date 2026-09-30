@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Корпус маслоуказателя.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.901",
+  "name": "Корпус маслоуказателя",
+  "properties": {
+    "material": "Сталь 20",
+    "mass": 0.35
+  },
+  "components": []
+}

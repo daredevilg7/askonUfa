@@ -1,0 +1,29 @@
+{
+  "formatVersion": 1,
+  "fileName": "Вал быстроходный в сборе.a3d",
+  "type": "Assembly",
+  "designation": "РДЦЛ.304112.200",
+  "name": "Вал быстроходный в сборе",
+  "properties": {
+    "material": null,
+    "mass": null
+  },
+  "components": [
+    {
+      "file": "Вал-шестерня.m3d",
+      "count": 1
+    },
+    {
+      "file": "Подшипник 206 ГОСТ 8338-75.m3d",
+      "count": 2
+    },
+    {
+      "file": "Манжета 1.1-30x52 ГОСТ 8752-79.m3d",
+      "count": 1
+    },
+    {
+      "file": "Шпонка 8x7x32 ГОСТ 23360-78.m3d",
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Подшипник 212 ГОСТ 8338-75.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Подшипник 212 ГОСТ 8338-75",
+  "properties": {
+    "material": null,
+    "mass": 0.6
+  },
+  "components": []
+}

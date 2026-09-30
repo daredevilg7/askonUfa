@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Пробка сливная.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.801",
+  "name": "Пробка сливная",
+  "properties": {
+    "material": "Сталь 20",
+    "mass": 0.08
+  },
+  "components": []
+}

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Шпонка 8x7x32 ГОСТ 23360-78.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Шпонка 8x7x32 ГОСТ 23360-78",
+  "properties": {
+    "material": null,
+    "mass": 0.014
+  },
+  "components": []
+}

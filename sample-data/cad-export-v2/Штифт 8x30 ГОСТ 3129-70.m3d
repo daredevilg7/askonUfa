@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Штифт 8x30 ГОСТ 3129-70.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Штифт 8x30 ГОСТ 3129-70",
+  "properties": {
+    "material": null,
+    "mass": 0.0118
+  },
+  "components": []
+}

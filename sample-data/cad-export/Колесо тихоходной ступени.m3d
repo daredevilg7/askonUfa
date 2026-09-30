@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Колесо тихоходной ступени.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.402",
+  "name": "Колесо тихоходной ступени",
+  "properties": {
+    "material": "Сталь 40Х",
+    "mass": 11.3
+  },
+  "components": []
+}

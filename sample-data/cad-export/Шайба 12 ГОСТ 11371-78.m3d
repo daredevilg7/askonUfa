@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Шайба 12 ГОСТ 11371-78.m3d",
+  "type": "StandardPart",
+  "designation": null,
+  "name": "Шайба 12 ГОСТ 11371-78",
+  "properties": {
+    "material": null,
+    "mass": 0.0063
+  },
+  "components": []
+}

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Втулка распорная.m3d",
+  "type": "Part",
+  "designation": "PДЦЛ.304112.601",
+  "name": "Втулка распорная",
+  "properties": {
+    "material": "Сталь 45",
+    "mass": 0.42
+  },
+  "components": []
+}

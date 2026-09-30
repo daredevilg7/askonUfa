@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "fileName": "Корпус.m3d",
+  "type": "Part",
+  "designation": "РДЦЛ.304112.101",
+  "name": "Корпус",
+  "properties": {
+    "material": "СЧ20",
+    "mass": 38.5
+  },
+  "components": []
+}
