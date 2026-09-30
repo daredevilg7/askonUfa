@@ -97,6 +97,79 @@ public class ImportTests
         Assert.Single(store.Documents);
     }
 
+    [Theory]
+    [InlineData("Сборка без обозначения")]
+    [InlineData("Деталь без обозначения")]
+    [InlineData("Деталь без материала")]
+    [InlineData("Деталь с пустым материалом")]
+    [InlineData("Стандартное изделие с обозначением")]
+    [InlineData("Стандартное изделие с материалом")]
+    [InlineData("Стандартное изделие без массы")]
+    [InlineData("Сборка с собственной массой")]
+    [InlineData("Сборка с материалом")]
+    [InlineData("Деталь с компонентами")]
+    [InlineData("Деталь с отрицательной массой")]
+    [InlineData("Стандартное изделие с отрицательной массой")]
+    public async Task Нарушение_атрибутов_из_PDF_отклоняет_документ_и_предка(string scenario)
+    {
+        var part = Part("Ошибка.m3d", "РДЦЛ.304112.001");
+        var assembly = Assembly("Ошибка.a3d", "РДЦЛ.304112.001");
+        var standard = new CadDocument("Ошибка.m3d", CadKind.StandardPart, null, "Болт", null, 0.1m, []);
+        var invalid = scenario switch
+        {
+            "Сборка без обозначения" => assembly with { Designation = null },
+            "Деталь без обозначения" => part with { Designation = null },
+            "Деталь без материала" => part with { Material = null },
+            "Деталь с пустым материалом" => part with { Material = " " },
+            "Стандартное изделие с обозначением" => standard with { Designation = "РДЦЛ.304112.001" },
+            "Стандартное изделие с материалом" => standard with { Material = "Сталь" },
+            "Стандартное изделие без массы" => standard with { MassKg = null },
+            "Сборка с собственной массой" => assembly with { MassKg = 1m },
+            "Сборка с материалом" => assembly with { Material = "Сталь" },
+            "Деталь с компонентами" => part with { Components = [new("Правильная.m3d", 1)] },
+            "Деталь с отрицательной массой" => part with { MassKg = -0.1m },
+            "Стандартное изделие с отрицательной массой" => standard with { MassKg = -0.1m },
+            _ => throw new ArgumentOutOfRangeException(nameof(scenario))
+        };
+        var valid = Part("Правильная.m3d", "РДЦЛ.304112.003");
+        var ancestor = Assembly("Верх.a3d", "РДЦЛ.304112.002", new CadComponent(invalid.FileName, 1));
+        var store = new FakeStore();
+        var report = await new ImportService(new FakeReader([Read(ancestor), Read(invalid), Read(valid)]), store)
+            .ImportAsync("подменный CAD без файлов");
+
+        Assert.Equal(1, report.Accepted);
+        Assert.Equal(2, report.Rejected);
+        Assert.Equal(0, report.Warnings);
+        Assert.Equal(3, report.Rows.Count);
+        Assert.All(report.Rows.Where(row => row.FileName != valid.FileName), row =>
+        {
+            Assert.Equal(ImportSeverity.Error, row.Severity);
+            Assert.False(string.IsNullOrWhiteSpace(row.Reason));
+        });
+        Assert.Equal(valid, Assert.Single(store.Documents));
+    }
+
+    [Fact]
+    public async Task Отчёт_различает_принятые_предупреждения_и_ошибки_для_каждого_файла()
+    {
+        var reads = new[]
+        {
+            Read(Part("Деталь.m3d", "РДЦЛ.304112.001")),
+            Read(Part("Прокладка.m3d", "РДЦЛ.304112.002", null)),
+            new CadReadResult("Ошибка.m3d", null, "Повреждённый документ"),
+            Read(Assembly("Узел.a3d", "РДЦЛ.304112.003", new CadComponent("Ошибка.m3d", 1)))
+        };
+        var report = await new ImportService(new FakeReader(reads), new FakeStore()).ImportAsync("подменный CAD");
+        Assert.Equal(2, report.Accepted);
+        Assert.Equal(1, report.Warnings);
+        Assert.Equal(2, report.Rejected);
+        Assert.Equal(reads.Select(read => read.FileName), report.Rows.Select(row => row.FileName));
+        Assert.Equal(ImportSeverity.Success, report.Rows[0].Severity);
+        Assert.Equal(ImportSeverity.Warning, report.Rows[1].Severity);
+        Assert.Equal(ImportSeverity.Error, report.Rows[2].Severity);
+        Assert.Equal(ImportSeverity.Error, report.Rows[3].Severity);
+    }
+
 
     [Fact]
     public void Переполнение_суммы_повторяющихся_компонентов_отклоняет_сборку()

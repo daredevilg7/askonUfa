@@ -126,6 +126,15 @@ public class StorageAndScenarioTests
         Assert.Equal(35, baseReport.Accepted);
         Assert.Equal(10, baseReport.Rejected);
         Assert.Equal(1, baseReport.Warnings);
+        Assert.Equal(34, baseReport.Rows.Count(row => row.Severity == ImportSeverity.Success));
+        Assert.Equal(new[]
+        {
+            "Втулка распорная.m3d", "Кольцо распорное.m3d", "Механизм переключения.a3d", "Отдушина.m3d",
+            "Привод масляного насоса.a3d", "Пробка сливная в сборе.a3d", "Рычаг переключения.a3d",
+            "Тяга переключения.a3d", "Шайба стопорная.m3d", "Шайба упорная.m3d"
+        }.Order(StringComparer.Ordinal), baseReport.Rows.Where(row => row.Severity == ImportSeverity.Error)
+            .Select(row => row.FileName).Order(StringComparer.Ordinal));
+        Assert.Equal("Прокладка маслоуказателя.m3d", Assert.Single(baseReport.Rows.Where(row => row.Severity == ImportSeverity.Warning)).FileName);
         var rootId = (await store.SearchAsync("Редуктор цилиндрический Ц2-160")).Single().ObjectId;
         var tree = await store.GetTreeAsync(rootId);
         Assert.Equal(98.8040m, ProductCalculator.CalculateMass(tree).TotalKg);
@@ -139,8 +148,32 @@ public class StorageAndScenarioTests
         Assert.Contains(missing.MissingComponents, name => name.Contains("Прокладка маслоуказателя"));
         foreach (var card in await store.SearchAsync("")) await store.ChangeStateAsync(card.ObjectId, VersionState.Approved);
         var report2 = await importer.ImportAsync(DataPath("cad-export-v2"));
+        Assert.Equal(35, report2.Accepted);
+        Assert.Equal(10, report2.Rejected);
+        Assert.Equal(1, report2.Warnings);
         Assert.Equal(2, report2.Changes.Created);
+        Assert.Equal(0, report2.Changes.Updated);
         Assert.Equal(33, report2.Changes.Unchanged);
+        var cardsV2 = await store.SearchAsync("");
+        Assert.Equal(new[] { "Колесо зубчатое", "Крышка подшипника в сборе" },
+            cardsV2.Where(card => card.VersionNo == 2).Select(card => card.Name).Order(StringComparer.Ordinal));
+        foreach (var card in cardsV2)
+        {
+            var versions = await store.GetVersionsAsync(card.ObjectId);
+            Assert.Equal(new VersionInfo(1, VersionState.Approved), versions[0]);
+            if (card.VersionNo == 2)
+            {
+                Assert.Equal(2, versions.Count);
+                Assert.Equal(new VersionInfo(2, VersionState.InWork), versions[1]);
+                Assert.Equal(VersionState.InWork, card.State);
+            }
+            else
+            {
+                Assert.Single(versions);
+                Assert.Equal(1, card.VersionNo);
+                Assert.Equal(VersionState.Approved, card.State);
+            }
+        }
         var changed = (await store.SearchAsync("Колесо зубчатое")).Single();
         Assert.Equal(2, (await store.GetCardAsync(changed.ObjectId))!.VersionNo);
         await using (var connection = new SqliteConnection($"Data Source={database}"))
@@ -150,6 +183,14 @@ public class StorageAndScenarioTests
             command.CommandText = "SELECT mass_kg FROM object_version WHERE object_id = $id AND version_no = 1";
             command.Parameters.AddWithValue("$id", changed.ObjectId);
             Assert.Equal("5.86", (string?)await command.ExecuteScalarAsync());
+            command.CommandText = """
+                SELECT link.quantity FROM bom_link link
+                JOIN object_version version ON version.id = link.parent_version_id
+                JOIN pdm_object child ON child.id = link.child_object_id
+                WHERE version.object_id = $id AND version.version_no = 1 AND child.name = 'Прокладка регулировочная'
+                """;
+            command.Parameters["$id"].Value = cardsV2.Single(card => card.Name == "Крышка подшипника в сборе").ObjectId;
+            Assert.Equal(3L, await command.ExecuteScalarAsync());
         }
         var v2Tree = await store.GetTreeAsync(rootId);
         Assert.Equal(98.8800m, ProductCalculator.CalculateMass(v2Tree).TotalKg);

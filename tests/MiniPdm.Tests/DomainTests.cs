@@ -11,6 +11,12 @@ public class DomainTests
     [InlineData("РДЦЛ.304112.30", false)]
     [InlineData("рдцл.304112.300", false)]
     [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData("ЁЖЗИ.123456.789", true)]
+    [InlineData(" РДЦЛ.304112.300", false)]
+    [InlineData("РДЦЛ.304112.300 ", false)]
+    [InlineData("РДЦЛ.304112.300\n", false)]
+    [InlineData("РДЦЛ.٣٠٤١١٢.300", false)]
     public void Обозначение_проверяется_строго(string? value, bool expected)
         => Assert.Equal(expected, Designation.IsValid(value));
 
