@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\MiniPdm.Application\MiniPdm.Application.csproj" />
     <ProjectReference Include="..\..\src\MiniPdm.Infrastructure\MiniPdm.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\MiniPdm.Desktop\MiniPdm.Desktop.csproj" />
   </ItemGroup>
 
 </Project>

@@ -127,6 +127,8 @@ public class ImportTests
     private sealed class FakeStore : IImportStore
     {
         public IReadOnlyList<CadDocument> Documents { get; private set; } = [];
+        public Task<IReadOnlyDictionary<string, string>> FindIdentityConflictsAsync(IReadOnlyList<CadDocument> documents, CancellationToken ct = default) =>
+            Task.FromResult<IReadOnlyDictionary<string, string>>(new Dictionary<string, string>());
         public Task<ApplyStatistics> ApplyAsync(IReadOnlyList<CadDocument> documents, CancellationToken ct = default)
         {
             Documents = documents;

@@ -38,6 +38,21 @@ public sealed class SqliteProductStore : IImportStore, IProductCatalog
         await connection.ExecuteAsync(new CommandDefinition(sql, cancellationToken: ct));
     }
 
+    public async Task<IReadOnlyDictionary<string, string>> FindIdentityConflictsAsync(IReadOnlyList<CadDocument> documents, CancellationToken ct = default)
+    {
+        await using var connection = await OpenAsync(ct);
+        var identities = (await connection.QueryAsync<IdentityRow>(new CommandDefinition(
+            "SELECT designation AS Designation, object_type AS Kind FROM pdm_object WHERE designation IS NOT NULL",
+            cancellationToken: ct))).ToDictionary(row => row.Designation, row => row.Kind, StringComparer.Ordinal);
+        var conflicts = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var document in documents)
+        {
+            if (document.Designation is not null && identities.TryGetValue(document.Designation, out var kind) && kind != (int)document.Kind)
+                conflicts.Add(document.FileName, $"Тип объекта с обозначением «{document.Designation}» не совпадает с сохранённым");
+        }
+        return conflicts;
+    }
+
     public async Task<ApplyStatistics> ApplyAsync(IReadOnlyList<CadDocument> documents, CancellationToken ct = default)
     {
         await using var connection = await OpenAsync(ct);
@@ -199,7 +214,7 @@ public sealed class SqliteProductStore : IImportStore, IProductCatalog
             new { ObjectId = objectId }, cancellationToken: ct));
         return rows.Select(row => new BomNode(row.ObjectId, row.ParentObjectId, row.VersionId,
             row.Path, row.ParentPath, row.Depth, row.DirectQuantity, row.PathQuantity,
-            (CadKind)row.Kind, row.Designation, row.Name, row.Material, ParseMass(row.MassKg))).ToArray();
+            (CadKind)row.Kind, row.Designation, row.Name, row.Material, ParseMass(row.MassKg), row.IsCycle != 0)).ToArray();
     }
 
     public async Task ChangeStateAsync(long objectId, VersionState target, CancellationToken ct = default)
@@ -233,9 +248,10 @@ public sealed class SqliteProductStore : IImportStore, IProductCatalog
         row.Material, ParseMass(row.MassKg));
 
     private sealed class ObjectRow { public long Id { get; set; } public int Kind { get; set; } }
+    private sealed class IdentityRow { public string Designation { get; set; } = ""; public int Kind { get; set; } }
     private sealed class VersionRow { public long Id { get; set; } public int VersionNo { get; set; } public int State { get; set; } public string? Material { get; set; } public string? MassKg { get; set; } }
     private sealed class LinkRow { public long ChildId { get; set; } public int Quantity { get; set; } }
     private sealed class CardRow { public long ObjectId { get; set; } public int Kind { get; set; } public string? Designation { get; set; } public string Name { get; set; } = ""; public int? VersionNo { get; set; } public int? State { get; set; } public string? Material { get; set; } public string? MassKg { get; set; } }
     private sealed class VersionInfoRow { public int VersionNo { get; set; } public int State { get; set; } }
-    private sealed class BomRow { public long ObjectId { get; set; } public long? ParentObjectId { get; set; } public long VersionId { get; set; } public string Path { get; set; } = ""; public string? ParentPath { get; set; } public int Depth { get; set; } public int DirectQuantity { get; set; } public long? PathQuantity { get; set; } public int Kind { get; set; } public string? Designation { get; set; } public string Name { get; set; } = ""; public string? Material { get; set; } public string? MassKg { get; set; } }
+    private sealed class BomRow { public long ObjectId { get; set; } public long? ParentObjectId { get; set; } public long VersionId { get; set; } public string Path { get; set; } = ""; public string? ParentPath { get; set; } public int Depth { get; set; } public int DirectQuantity { get; set; } public long? PathQuantity { get; set; } public int Kind { get; set; } public string? Designation { get; set; } public string Name { get; set; } = ""; public string? Material { get; set; } public string? MassKg { get; set; } public int IsCycle { get; set; } }
 }

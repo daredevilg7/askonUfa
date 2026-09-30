@@ -10,8 +10,7 @@ public static class ProductCalculator
 {
     public static MassResult CalculateMass(IReadOnlyList<BomNode> tree)
     {
-        if (tree.Count == 0 || tree[0].Kind != CadKind.Assembly)
-            throw new ArgumentException("Для расчёта выберите сборку с текущей версией", nameof(tree));
+        EnsureValidTree(tree);
         var leaves = tree.Where(node => node.Kind != CadKind.Assembly).ToArray();
         if (leaves.Any(node => node.PathQuantity is null))
             throw new OverflowException("Количество по пути превышает допустимый предел");
@@ -25,8 +24,7 @@ public static class ProductCalculator
 
     public static IReadOnlyList<SpecificationLine> BuildSpecification(IReadOnlyList<BomNode> tree)
     {
-        if (tree.Count == 0 || tree[0].Kind != CadKind.Assembly)
-            throw new ArgumentException("Для спецификации выберите сборку с текущей версией", nameof(tree));
+        EnsureValidTree(tree);
         var lines = new List<SpecificationLine>();
         foreach (var group in tree.Where(node => node.Kind != CadKind.Assembly).GroupBy(node => node.ObjectId))
         {
@@ -38,5 +36,14 @@ public static class ProductCalculator
             lines.Add(new SpecificationLine(first.ObjectId, first.Designation, first.Name, quantity, first.MassKg, totalMass));
         }
         return lines.OrderBy(line => line.Designation ?? line.Name, StringComparer.CurrentCulture).ToArray();
+    }
+
+    private static void EnsureValidTree(IReadOnlyList<BomNode> tree)
+    {
+        if (tree.Count == 0 || tree[0].Kind != CadKind.Assembly)
+            throw new ArgumentException("Выберите сборку с текущей версией", nameof(tree));
+        var cyclicNode = tree.FirstOrDefault(node => node.IsCycle);
+        if (cyclicNode is not null)
+            throw new InvalidOperationException($"В текущем составе обнаружен цикл: {cyclicNode.Name} ({cyclicNode.Path})");
     }
 }

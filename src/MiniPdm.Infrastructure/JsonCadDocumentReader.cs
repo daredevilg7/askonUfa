@@ -36,6 +36,10 @@ public sealed class JsonCadDocumentReader : ICadDocumentReader
                     components, root.GetProperty("formatVersion").GetInt32());
                 results.Add(new CadReadResult(fileName, document, null));
             }
+            catch (DecoderFallbackException)
+            {
+                results.Add(new CadReadResult(fileName, null, "Файл содержит недопустимую последовательность UTF-8"));
+            }
             catch (Exception error) when (error is JsonException or InvalidOperationException or FormatException or IOException or UnauthorizedAccessException or KeyNotFoundException)
             {
                 results.Add(new CadReadResult(fileName, null, "Не удалось прочитать JSON-документ"));

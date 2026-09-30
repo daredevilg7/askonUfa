@@ -11,7 +11,8 @@ public sealed record VersionInfo(int VersionNo, VersionState State);
 public sealed record BomNode(
     long ObjectId, long? ParentObjectId, long VersionId,
     string Path, string? ParentPath, int Depth, int DirectQuantity, long? PathQuantity,
-    CadKind Kind, string? Designation, string Name, string? Material, decimal? MassKg);
+    CadKind Kind, string? Designation, string Name, string? Material, decimal? MassKg,
+    bool IsCycle = false);
 
 public interface IProductCatalog
 {

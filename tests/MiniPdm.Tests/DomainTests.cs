@@ -22,6 +22,8 @@ public class DomainTests
     [InlineData(VersionState.Cancelled, VersionState.InWork, false)]
     [InlineData(VersionState.Cancelled, VersionState.Approved, false)]
     [InlineData(VersionState.InWork, VersionState.InWork, false)]
+    [InlineData(VersionState.Approved, VersionState.Approved, false)]
+    [InlineData(VersionState.Cancelled, VersionState.Cancelled, false)]
     public void Разрешены_только_прямые_переходы(VersionState from, VersionState to, bool expected)
         => Assert.Equal(expected, VersionRules.CanTransition(from, to));
 }

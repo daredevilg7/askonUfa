@@ -17,6 +17,7 @@ public sealed record ImportReport(IReadOnlyList<ImportRow> Rows, ApplyStatistics
 
 public interface IImportStore
 {
+    Task<IReadOnlyDictionary<string, string>> FindIdentityConflictsAsync(IReadOnlyList<CadDocument> documents, CancellationToken ct = default);
     Task<ApplyStatistics> ApplyAsync(IReadOnlyList<CadDocument> documents, CancellationToken ct = default);
 }
 
@@ -26,6 +27,17 @@ public sealed class ImportService(ICadDocumentReader reader, IImportStore store)
     {
         var reads = await reader.ReadSourceAsync(source, ct);
         var batch = ImportValidator.Validate(reads);
+        if (batch.Accepted.Count > 0)
+        {
+            var conflicts = await store.FindIdentityConflictsAsync(batch.Accepted, ct);
+            if (conflicts.Count > 0)
+            {
+                reads = reads.Select(result => conflicts.TryGetValue(result.FileName, out var reason)
+                    ? new CadReadResult(result.FileName, null, reason)
+                    : result).ToArray();
+                batch = ImportValidator.Validate(reads);
+            }
+        }
         var changes = batch.Accepted.Count == 0
             ? new ApplyStatistics(0, 0, 0)
             : await store.ApplyAsync(batch.Accepted, ct);

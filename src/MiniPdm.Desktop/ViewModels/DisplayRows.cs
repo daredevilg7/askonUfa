@@ -11,6 +11,7 @@ public sealed class TreeNodeViewModel
         Label = data.Depth == 0
             ? $"{data.Designation}  {data.Name}"
             : $"{data.Designation ?? "СТАНДАРТ"}  {data.Name}  × {data.DirectQuantity}";
+        if (data.IsCycle) Label += " · циклическая ссылка";
     }
 
     public BomNode Data { get; }

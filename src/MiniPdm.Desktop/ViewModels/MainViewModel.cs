@@ -68,6 +68,7 @@ public partial class MainViewModel : ObservableObject
 
     partial void OnSelectedCardChanged(ProductCard? value)
     {
+        ResetSpecification();
         OnPropertyChanged(nameof(SelectedName));
         OnPropertyChanged(nameof(SelectedDesignation));
         OnPropertyChanged(nameof(SelectedKind));
@@ -118,6 +119,7 @@ public partial class MainViewModel : ObservableObject
         {
             SelectedCard = await _store.GetCardAsync(objectId);
             MassText = "Нажмите «Рассчитать массу»";
+            ResetSpecification();
             if (replaceTree)
             {
                 Roots.Clear();
@@ -142,13 +144,13 @@ public partial class MainViewModel : ObservableObject
     private async Task ImportAsync()
     {
         if (IsBusy) return;
-        var folder = await _folderPicker.PickAsync();
-        if (folder is null) return;
         IsBusy = true;
-        StatusText = "Импорт выполняется…";
         try
         {
-            var report = await _importer.ImportAsync(folder);
+            var folder = await _folderPicker.PickAsync();
+            if (folder is null) return;
+            StatusText = "Импорт выполняется…";
+            var report = await Task.Run(() => _importer.ImportAsync(folder));
             ReportRows.Clear();
             foreach (var row in report.Rows) ReportRows.Add(ReportRowViewModel.From(row));
             ReportSummary = $"Принято: {report.Accepted} (с предупреждением: {report.Warnings}) · Отклонено: {report.Rejected} · Новых версий: {report.Changes.Created} · Обновлено: {report.Changes.Updated} · Без изменений: {report.Changes.Unchanged}";
@@ -166,7 +168,9 @@ public partial class MainViewModel : ObservableObject
         if (!IsAssembly || SelectedCard is null) return;
         try
         {
-            var result = ProductCalculator.CalculateMass(await _store.GetTreeAsync(SelectedCard.ObjectId));
+            var objectId = SelectedCard.ObjectId;
+            var result = ProductCalculator.CalculateMass(await _store.GetTreeAsync(objectId));
+            if (SelectedCard?.ObjectId != objectId) return;
             MassText = result.TotalKg is null
                 ? "Масса недоступна. Без массы: " + string.Join(", ", result.MissingComponents)
                 : $"Масса сборки: {result.TotalKg:0.####} кг";
@@ -180,10 +184,12 @@ public partial class MainViewModel : ObservableObject
         if (!IsAssembly || SelectedCard is null) return;
         try
         {
-            var rows = ProductCalculator.BuildSpecification(await _store.GetTreeAsync(SelectedCard.ObjectId));
+            var objectId = SelectedCard.ObjectId;
+            var rows = ProductCalculator.BuildSpecification(await _store.GetTreeAsync(objectId));
+            if (SelectedCard?.ObjectId != objectId) return;
             SpecificationRows.Clear();
             foreach (var row in rows) SpecificationRows.Add(SpecificationRowViewModel.From(row));
-            SpecificationSummary = $"Позиций: {rows.Count} · Всего изделий: {rows.Sum(row => row.Quantity)}";
+            SpecificationSummary = $"{SelectedCard.Name} · Позиций: {rows.Count} · Всего изделий: {rows.Sum(row => row.Quantity)}";
             SelectedTabIndex = 2;
         }
         catch (Exception error) { StatusText = $"Ошибка спецификации: {error.Message}"; }
@@ -201,5 +207,11 @@ public partial class MainViewModel : ObservableObject
             StatusText = "Состояние версии изменено";
         }
         catch (Exception error) { StatusText = $"Ошибка смены состояния: {error.Message}"; }
+    }
+
+    private void ResetSpecification()
+    {
+        SpecificationRows.Clear();
+        SpecificationSummary = "Спецификация не рассчитана для выбранного объекта";
     }
 }
