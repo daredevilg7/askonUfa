@@ -1,0 +1,151 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MiniPdm.Desktop.Views.MainWindow"
+        Title="Мини-PDM · Состав изделия"
+        Width="1320" Height="820" MinWidth="980" MinHeight="620">
+  <Grid RowDefinitions="76,*,38">
+    <Border Grid.Row="0" Background="#172B39" Padding="24,12">
+      <Grid ColumnDefinitions="320,*,Auto" VerticalAlignment="Center">
+        <StackPanel Grid.Column="0" Spacing="2">
+          <TextBlock Text="МИНИ-PDM" FontSize="21" FontWeight="Bold" Foreground="#FFFFFF" />
+          <TextBlock Text="СОСТАВ ИЗДЕЛИЯ" FontSize="11" FontWeight="SemiBold" Foreground="#C6CFD2" />
+        </StackPanel>
+        <TextBlock Grid.Column="1" Text="Объекты · версии · спецификации" FontSize="15" Foreground="#D5DEE0" VerticalAlignment="Center" />
+        <Button Grid.Column="2" Classes="primary" Content="Импортировать папку" Command="{Binding ImportCommand}" IsEnabled="{Binding !IsBusy}" />
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="360,*" Margin="16" ColumnSpacing="16">
+      <Border Grid.Column="0" Background="#FFFFFF" CornerRadius="8" BorderBrush="#D9DFDD" BorderThickness="1">
+        <Grid RowDefinitions="Auto,Auto,205,Auto,*" Margin="16" RowSpacing="10">
+          <TextBlock Grid.Row="0" Text="НАВИГАЦИЯ" Foreground="#66747B" FontSize="11" FontWeight="Bold" />
+          <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBox Grid.Column="0" Watermark="Обозначение или наименование" Text="{Binding SearchText}" />
+            <Button Grid.Column="1" Classes="secondary" Content="Найти" Command="{Binding SearchCommand}" />
+          </Grid>
+          <Border Grid.Row="2" BorderBrush="#E1E5E3" BorderThickness="0,0,0,1" Padding="0,0,0,10">
+            <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}" BorderThickness="0">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Spacing="2" Margin="3,4">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Designation}" Foreground="#74838A" FontSize="11" />
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Border>
+          <TextBlock Grid.Row="3" Text="ДЕРЕВО СОСТАВА" Foreground="#66747B" FontSize="11" FontWeight="Bold" />
+          <TreeView Grid.Row="4" ItemsSource="{Binding Roots}" SelectedItem="{Binding SelectedTreeNode}" BorderThickness="0">
+            <TreeView.ItemTemplate>
+              <TreeDataTemplate ItemsSource="{Binding Children}">
+                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+              </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+          </TreeView>
+        </Grid>
+      </Border>
+
+      <Border Grid.Column="1" Background="#FFFFFF" CornerRadius="8" BorderBrush="#D9DFDD" BorderThickness="1">
+        <TabControl SelectedIndex="{Binding SelectedTabIndex}">
+          <TabItem Header="Карточка объекта">
+            <ScrollViewer>
+              <StackPanel Margin="26" Spacing="20">
+                <StackPanel Spacing="5">
+                  <TextBlock Text="ОБЪЕКТ" Foreground="#74838A" FontSize="11" FontWeight="Bold" />
+                  <TextBlock Text="{Binding SelectedName}" FontSize="28" FontWeight="SemiBold" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding SelectedDesignation}" FontSize="16" Foreground="#A76B24" />
+                </StackPanel>
+                <Border Height="1" Background="#E2E7E5" />
+                <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="11">
+                  <TextBlock Grid.Row="0" Grid.Column="0" Text="Тип" Foreground="#66747B" />
+                  <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedKind}" FontWeight="SemiBold" />
+                  <TextBlock Grid.Row="1" Grid.Column="0" Text="Текущая версия" Foreground="#66747B" />
+                  <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedVersion}" FontWeight="SemiBold" />
+                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Состояние" Foreground="#66747B" />
+                  <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedState}" FontWeight="SemiBold" />
+                  <TextBlock Grid.Row="3" Grid.Column="0" Text="Материал" Foreground="#66747B" />
+                  <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedMaterial}" />
+                  <TextBlock Grid.Row="4" Grid.Column="0" Text="Масса за 1 шт." Foreground="#66747B" />
+                  <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SelectedUnitMass}" />
+                </Grid>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <Button Classes="secondary" Content="Утвердить" Command="{Binding ApproveCommand}" IsEnabled="{Binding CanApprove}" />
+                  <Button Classes="secondary" Content="Аннулировать" Command="{Binding CancelCommand}" IsEnabled="{Binding CanCancel}" />
+                </StackPanel>
+                <Border Height="1" Background="#E2E7E5" />
+                <StackPanel Spacing="12">
+                  <TextBlock Text="РАСЧЁТ СБОРКИ" Foreground="#74838A" FontSize="11" FontWeight="Bold" />
+                  <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Classes="primary" Content="Рассчитать массу" Command="{Binding MassCommand}" IsEnabled="{Binding IsAssembly}" />
+                    <Button Classes="secondary" Content="Сводная спецификация" Command="{Binding SpecificationCommand}" IsEnabled="{Binding IsAssembly}" />
+                  </StackPanel>
+                  <TextBlock Text="{Binding MassText}" TextWrapping="Wrap" FontSize="16" />
+                </StackPanel>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+
+          <TabItem Header="Отчёт импорта">
+            <Grid RowDefinitions="Auto,Auto,*" Margin="22" RowSpacing="12">
+              <TextBlock Grid.Row="0" Text="РЕЗУЛЬТАТ ИМПОРТА" FontSize="20" FontWeight="SemiBold" />
+              <TextBlock Grid.Row="1" Text="{Binding ReportSummary}" TextWrapping="Wrap" Foreground="#4F626A" />
+              <ScrollViewer Grid.Row="2">
+                <ItemsControl ItemsSource="{Binding ReportRows}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border BorderBrush="#E2E7E5" BorderThickness="0,0,0,1" Padding="8,9">
+                        <Grid ColumnDefinitions="230,110,*" ColumnSpacing="10">
+                          <TextBlock Grid.Column="0" Text="{Binding FileName}" TextWrapping="Wrap" />
+                          <TextBlock Grid.Column="1" Text="{Binding Result}" FontWeight="SemiBold" />
+                          <TextBlock Grid.Column="2" Text="{Binding Reason}" TextWrapping="Wrap" Foreground="#566971" />
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Grid>
+          </TabItem>
+
+          <TabItem Header="Сводная спецификация">
+            <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="22" RowSpacing="12">
+              <TextBlock Grid.Row="0" Text="СВОДНАЯ СПЕЦИФИКАЦИЯ" FontSize="20" FontWeight="SemiBold" />
+              <TextBlock Grid.Row="1" Text="{Binding SpecificationSummary}" Foreground="#4F626A" />
+              <Border Grid.Row="2" Background="#EDF1EF" Padding="8">
+                <Grid ColumnDefinitions="150,*,85,100,100" ColumnSpacing="10">
+                  <TextBlock Grid.Column="0" Text="Обозначение" FontWeight="Bold" />
+                  <TextBlock Grid.Column="1" Text="Наименование" FontWeight="Bold" />
+                  <TextBlock Grid.Column="2" Text="Кол-во" FontWeight="Bold" />
+                  <TextBlock Grid.Column="3" Text="Кг/шт." FontWeight="Bold" />
+                  <TextBlock Grid.Column="4" Text="Всего, кг" FontWeight="Bold" />
+                </Grid>
+              </Border>
+              <ScrollViewer Grid.Row="3">
+                <ItemsControl ItemsSource="{Binding SpecificationRows}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border BorderBrush="#E2E7E5" BorderThickness="0,0,0,1" Padding="8,9">
+                        <Grid ColumnDefinitions="150,*,85,100,100" ColumnSpacing="10">
+                          <TextBlock Grid.Column="0" Text="{Binding Designation}" />
+                          <TextBlock Grid.Column="1" Text="{Binding Name}" TextWrapping="Wrap" />
+                          <TextBlock Grid.Column="2" Text="{Binding Quantity}" />
+                          <TextBlock Grid.Column="3" Text="{Binding UnitMass}" />
+                          <TextBlock Grid.Column="4" Text="{Binding LineMass}" />
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Grid>
+          </TabItem>
+        </TabControl>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="2" Background="#DDE4E1" Padding="16,8">
+      <TextBlock Text="{Binding StatusText}" Foreground="#344851" TextTrimming="CharacterEllipsis" />
+    </Border>
+  </Grid>
+</Window>

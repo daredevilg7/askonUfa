@@ -97,6 +97,28 @@ public class ImportTests
         Assert.Single(store.Documents);
     }
 
+
+    [Fact]
+    public void Переполнение_суммы_повторяющихся_компонентов_отклоняет_сборку()
+    {
+        var batch = ImportValidator.Validate([
+            Read(Part("Деталь.m3d", "РДЦЛ.304112.001")),
+            Read(Assembly("Узел.a3d", "РДЦЛ.304112.002",
+                new CadComponent("Деталь.m3d", int.MaxValue), new CadComponent("Деталь.m3d", 1)))
+        ]);
+        Assert.DoesNotContain(batch.Accepted, document => document.FileName == "Узел.a3d");
+        Assert.Contains(batch.Rows, row => row.FileName == "Узел.a3d" && row.Reason.Contains("превышает"));
+    }
+
+    [Fact]
+    public void Стандартные_изделия_с_одинаковым_именем_отклоняются_оба()
+    {
+        var first = new CadDocument("Первый.m3d", CadKind.StandardPart, null, "Болт", null, 0.1m, []);
+        var second = first with { FileName = "Второй.m3d" };
+        var batch = ImportValidator.Validate([Read(first), Read(second)]);
+        Assert.Empty(batch.Accepted);
+        Assert.All(batch.Rows, row => Assert.Equal(ImportSeverity.Error, row.Severity));
+    }
     private sealed class FakeReader(IReadOnlyList<CadReadResult> documents) : ICadDocumentReader
     {
         public Task<IReadOnlyList<CadReadResult>> ReadSourceAsync(string source, CancellationToken ct = default) => Task.FromResult(documents);

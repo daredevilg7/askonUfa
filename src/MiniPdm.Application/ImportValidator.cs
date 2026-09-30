@@ -40,6 +40,20 @@ public static class ImportValidator
                     if (component.Quantity <= 0) errors[result.FileName].Add($"Количество компонента «{component.FileName}» должно быть положительным");
                     if (!byName.ContainsKey(component.FileName)) errors[result.FileName].Add($"Отсутствует файл «{component.FileName}»");
                 }
+                foreach (var group in document.Components.GroupBy(component => component.FileName, StringComparer.Ordinal))
+                {
+                    var total = 0;
+                    foreach (var component in group)
+                    {
+                        if (component.Quantity <= 0) continue;
+                        if (total > int.MaxValue - component.Quantity)
+                        {
+                            errors[result.FileName].Add($"Суммарное количество компонента «{group.Key}» превышает допустимый предел");
+                            break;
+                        }
+                        total += component.Quantity;
+                    }
+                }
             }
             else
             {

@@ -84,4 +84,44 @@ public class StorageAndScenarioTests
         Assert.Equal(122, v2Spec.Sum(row => row.Quantity));
         Assert.Equal(16, v2Spec.Single(row => row.Name == "Прокладка регулировочная").Quantity);
     }
+    [Fact]
+    public async Task После_отмены_всех_версий_повторный_импорт_создаёт_следующий_номер()
+    {
+        var store = new SqliteProductStore(TempDatabase());
+        await store.InitializeAsync();
+        await store.ApplyAsync([Part()]);
+        var id = (await store.SearchAsync("Деталь")).Single().ObjectId;
+        await store.ChangeStateAsync(id, VersionState.Cancelled);
+        Assert.Null((await store.GetCardAsync(id))!.VersionNo);
+        Assert.Empty(await store.GetTreeAsync(id));
+        await store.ApplyAsync([Part(2m)]);
+        Assert.Equal(2, (await store.GetCardAsync(id))!.VersionNo);
+        Assert.Equal(VersionState.Cancelled, (await store.GetVersionsAsync(id))[0].State);
+    }
+
+    [Fact]
+    public async Task Порядок_строк_BOM_не_создаёт_новую_версию()
+    {
+        var store = new SqliteProductStore(TempDatabase());
+        await store.InitializeAsync();
+        var standard = new CadDocument("Болт.m3d", CadKind.StandardPart, null, "Болт", null, 0.1m, []);
+        await store.ApplyAsync([Part(), standard, Assembly(new CadComponent("Деталь.m3d", 2), new CadComponent("Болт.m3d", 3))]);
+        var result = await store.ApplyAsync([standard, Part(), Assembly(new CadComponent("Болт.m3d", 3), new CadComponent("Деталь.m3d", 2))]);
+        Assert.Equal(3, result.Unchanged);
+    }
+
+    [Fact]
+    public async Task Изменённая_версия_в_работе_обновляется_без_нового_номера()
+    {
+        var store = new SqliteProductStore(TempDatabase());
+        await store.InitializeAsync();
+        await store.ApplyAsync([Part()]);
+        var id = (await store.SearchAsync("Деталь")).Single().ObjectId;
+        var result = await store.ApplyAsync([Part(2m)]);
+        Assert.Equal(1, result.Updated);
+        Assert.Equal(0, result.Created);
+        Assert.Equal(1, (await store.GetCardAsync(id))!.VersionNo);
+        Assert.Equal(2m, (await store.GetCardAsync(id))!.MassKg);
+    }
+
 }
